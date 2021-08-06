@@ -18,7 +18,7 @@ class CommandErrorHandler(commands.Cog):
         self.client = client
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx, error):  # pylint: disable=R1260
         """A cog trigger when an error occurs"""
 
         # This prevents any commands with local handlers being handled here in on_command_error.

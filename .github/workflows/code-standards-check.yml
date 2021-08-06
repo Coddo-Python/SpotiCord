@@ -20,6 +20,7 @@ jobs:
           pip install wheel
           pip install mypy pylint black
           pip install mdformat-gfm mdformat-toc
+          pip install -r requirements.txt
       
       - name: Run mdformat (github flavoured) check
         run: |
@@ -36,10 +37,6 @@ jobs:
       - name: Run Pylint check
         run: |
           pylint --fail-under 9 --limit-inference-results 0 ./src
-      
-      - name: Run MyPy check
-        run: |
-          mypy --ignore-missing-imports --follow-imports silent ./src
       
       - name: Run Black check
         run: |

@@ -306,6 +306,7 @@ class MusicPlayer(commands.Cog):
 
 class AudioPlayer:
     """A class containing all backend code of the MusicPlayer cog"""
+
     def __init__(self, discord_audio, discord_id, activity):
         # Apparently pycharm says I should be declaring all class attributes here?
         self.enhanced_precision_object = None
@@ -322,7 +323,7 @@ class AudioPlayer:
         self.enhanced_precision_audio = None
         self.metadata = None
 
-    async def play(
+    async def play(  # pylint: disable=R1260
         self, url: str, url_type: str, from_queue: typing.Optional[bool] = False
     ) -> None:
         """
@@ -469,7 +470,7 @@ class AudioPlayer:
 
     async def count(self, duration: int) -> None:
         """An RPC function to simply count in seconds how far
-         the bot is into a song"""
+        the bot is into a song"""
         while self.timestamp < duration:
             await asyncio.sleep(1)
             self.timestamp += 1
@@ -536,6 +537,7 @@ class AudioPlayer:
 
 class EnhancedPrecision:
     """A class to contain all interactions with spotify"""
+
     def __init__(self, activity):
         self.activity = activity
         self.data = None
@@ -853,6 +855,7 @@ class EnhancedPrecision:
 
 class SpotiSearch:
     """A class containing tools to download and search for songs"""
+
     def __new__(cls, search):
         data = ytmusic.search(search, "songs", 1)[0]
         return asyncio.get_event_loop().run_until_complete(
