@@ -305,6 +305,7 @@ class MusicPlayer(commands.Cog):
 
 
 class AudioPlayer:
+    """A class containing all backend code of the MusicPlayer cog"""
     def __init__(self, discord_audio, discord_id, activity):
         # Apparently pycharm says I should be declaring all class attributes here?
         self.enhanced_precision_object = None
@@ -458,6 +459,8 @@ class AudioPlayer:
             return
 
     async def enhanced_after_play(self):
+        """A function to be called once the current song playing
+        has finished or stopped playing"""
         if not self.stop:
             if self.tempdata["ended"] == 0:
                 await self.enhanced_precision_object.activity_to_data()
@@ -465,6 +468,8 @@ class AudioPlayer:
                 await self.enhanced_precision()
 
     async def count(self, duration: int) -> None:
+        """An RPC function to simply count in seconds how far
+         the bot is into a song"""
         while self.timestamp < duration:
             await asyncio.sleep(1)
             self.timestamp += 1
@@ -528,10 +533,9 @@ class AudioPlayer:
         time_taken = datetime.utcnow() - function_start_time
         return time_taken, audio_source
 
-    # def bass_manager(self):
-
 
 class EnhancedPrecision:
+    """A class to contain all interactions with spotify"""
     def __init__(self, activity):
         self.activity = activity
         self.data = None
@@ -548,7 +552,8 @@ class EnhancedPrecision:
         - `str` Track Youtube URL or "Song Not Found!"
 
         ### Errors raised
-        - None
+        - `requests.exceptions.ConnectionError`, Occurs when Python (urllib3) is unable to connect
+        to the internet or the Spotify API
 
         ### Function / Notes
         - None
@@ -576,7 +581,8 @@ class EnhancedPrecision:
         - `List[str]` List of tracks in the album if the album was found
 
         ### Errors raised
-        - None
+        - `requests.exceptions.ConnectionError`, Occurs when Python (urllib3) is unable to connect
+        to the internet or the Spotify API
 
         ### Function / Notes
         - None
@@ -604,7 +610,8 @@ class EnhancedPrecision:
         - `List[str]` List of tracks in the playlist if the playlist was found
 
         ### Errors raised
-        - None
+        - `requests.exceptions.ConnectionError`, Occurs when Python (urllib3) is unable to connect
+        to the internet or the Spotify API
 
         ### Function / Notes
         - None
@@ -697,10 +704,21 @@ class EnhancedPrecision:
         - `dict` Metadata of track
 
         ### Errors raised
-        - None
+        - `requests.exceptions.ConnectionError`, Occurs when Python (urllib3) is unable to connect
+        to the internet or the Spotify API
 
         ### Function / Notes
-        - All the dict keys are pretty self explanatory
+        - URL: 'str', URL of the track
+        - name: 'str', Name of the track
+        - artists: 'List[str]', List of the track's artist(s)
+        - genres: 'List[str]', List of possible genres of the track (can be empty)
+        - is_explicit: 'bool', If the track is explicit or not
+        - duration: 'int', Duration of the track in seconds
+        - album_art: 'dict', Dict containing height (px), width (px) and url keys
+        - album_name: 'str', Name of the track's album
+        - album_artists: 'List[str]', List of contributing artists to the album
+        - album_release: 'str', Date of album release (str) in the format '%Y-%m-%d'
+        (Python datetime time format)
         """
         activity = activity or self.activity
         more_track_data = await EnhancedPrecision.get_track_metadata(activity.track_id)
@@ -730,6 +748,30 @@ class EnhancedPrecision:
 
     @staticmethod
     async def youtube_to_metadata(youtube_data: dict) -> dict:
+        """
+        ### Args
+        - youtube_data: `dict`, Youtube metadata from ytm.py
+
+        ### Returns
+        - `dict`, Metadata of the video
+
+        ### Errors raised
+        - `requests.exceptions.ConnectionError`, Occurs when Python (urllib3) is unable to connect
+        to the internet or the Spotify API
+
+        ### Returned dict keys
+        - URL: 'str', URL of the track
+        - name: 'str', Name of the track
+        - artists: 'List[str]', List of the track's artist(s)
+        - genres: 'List[str]', List of possible genres of the track (can be empty)
+        - is_explicit: 'bool', If the track is explicit or not
+        - duration: 'int', Duration of the track in seconds
+        - album_art: 'dict', url of album_art
+        - album_name: 'str', Name of the track's album
+        - album_artists: 'List[str]', List of contributing artists to the album
+        - album_release: 'str', Date of album release (str) in the format '%Y-%m-%d'
+        (Python datetime time format)
+        """
         prediction = await EnhancedPrecision.get_track_metadata_by_name(
             youtube_data["title"]
         )
@@ -810,6 +852,7 @@ class EnhancedPrecision:
 
 
 class SpotiSearch:
+    """A class containing tools to download and search for songs"""
     def __new__(cls, search):
         data = ytmusic.search(search, "songs", 1)[0]
         return asyncio.get_event_loop().run_until_complete(
